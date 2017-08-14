@@ -13,7 +13,8 @@
       "name": "message",
       "apiKey": "SendGridKey",
       "from": "noreply@example.com",
-      "direction": "out"
+      "direction": "out",
+      "subject": "Hello from yutasendgridfunction"
     }
   ]
 }
