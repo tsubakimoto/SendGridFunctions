@@ -3,6 +3,7 @@ using Microsoft.Azure.WebJobs.Host;
 using SendGrid.Helpers.Mail;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 
 namespace SendGridFunctions
 {
@@ -14,15 +15,16 @@ namespace SendGridFunctions
             log.Info($"C# Queue trigger function processed: {address}");
 
             var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+            var config = new SendGridConfig();
 
             message = new Mail
             {
-                From = new Email("noreply@example.com"),
+                From = new Email(config.From),
                 Personalization = new List<Personalization>
                 {
                     new Personalization
                     {
-                        Subject = "Hello from Queue2SendGrid",
+                        Subject = config.Subject,
                         Tos = new List<Email>
                         {
                             new Email(address)
@@ -31,9 +33,16 @@ namespace SendGridFunctions
                 },
                 Contents = new List<Content>
                 {
-                    new Content("text/plain", $"Lorem ipsum ... {timestamp}")
+                    new Content("text/plain", string.Format(config.Body, timestamp))
                 }
             };
         }
+    }
+
+    public class SendGridConfig
+    {
+        public string From { get; } = ConfigurationManager.AppSettings["SendGridFrom"];
+        public string Subject { get; } = ConfigurationManager.AppSettings["SendGridSubject"];
+        public string Body { get; } = ConfigurationManager.AppSettings["SendGridBody"];
     }
 }
